@@ -5,17 +5,41 @@
  */
 package projecto;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JComboBox;
+
 /**
  *
  * @author Batista
  */
 public class EcraInicial extends javax.swing.JFrame {
-
+    Connection con;
+    Statement smt = null;
+    ResultSet rs = null;
+    int i;
+    int RegiaoID;
+    int CentroHID;
+    int CentroID;
+    int ServicoID;
+    int HospitalID;
+    int AreaClinicaID;
     /**
      * Creates new form EcraInicial
      */
-    public EcraInicial() {
+    public EcraInicial() throws SQLException, ClassNotFoundException {
+        Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+        con = DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName=Projecto;user=david;password=emotions24ever;");
         initComponents();
+        setRegiao();
     }
 
     /**
@@ -33,13 +57,13 @@ public class EcraInicial extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jComboBox2 = new javax.swing.JComboBox<>();
-        jComboBox3 = new javax.swing.JComboBox<>();
-        jComboBox4 = new javax.swing.JComboBox<>();
-        jComboBox5 = new javax.swing.JComboBox<>();
+        RegiaoCB = new javax.swing.JComboBox<>();
+        CentroHCB = new javax.swing.JComboBox<>();
+        HospitalCB = new javax.swing.JComboBox<>();
+        CentroCB = new javax.swing.JComboBox<>();
+        ServicoCB = new javax.swing.JComboBox<>();
         jLabel1 = new javax.swing.JLabel();
-        jComboBox6 = new javax.swing.JComboBox<>();
+        AreaClinicaCB = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -60,7 +84,11 @@ public class EcraInicial extends javax.swing.JFrame {
 
         jLabel6.setText("Área Clinica");
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " " }));
+        ServicoCB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ServicoCBActionPerformed(evt);
+            }
+        });
 
         jLabel1.setText("Região");
 
@@ -82,12 +110,12 @@ public class EcraInicial extends javax.swing.JFrame {
                             .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jComboBox5, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jComboBox4, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jComboBox6, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(RegiaoCB, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(ServicoCB, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(CentroCB, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(HospitalCB, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(CentroHCB, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(AreaClinicaCB, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(126, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -98,27 +126,27 @@ public class EcraInicial extends javax.swing.JFrame {
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(2, 2, 2)
-                        .addComponent(jComboBox1)))
+                        .addComponent(RegiaoCB)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox2))
+                    .addComponent(CentroHCB))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox3))
+                    .addComponent(HospitalCB))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox4))
+                    .addComponent(CentroCB))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox5))
+                    .addComponent(ServicoCB))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox6))
+                    .addComponent(AreaClinicaCB))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(36, Short.MAX_VALUE))
@@ -128,10 +156,32 @@ public class EcraInicial extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        Aplicacoes aplicacao = new Aplicacoes();
-        aplicacao.setVisible(true);
-        this.setVisible(false);
+        if (AreaClinicaCB.getItemCount()!=0){
+            try {
+                smt = con.createStatement();
+            } catch (SQLException ex) {
+                Logger.getLogger(EcraInicial.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            try {          
+                rs = smt.executeQuery("SELECT * FROM AreasClinicas WHERE ServicosID= "+ServicoID);
+                for(i=0;i<=AreaClinicaCB.getSelectedIndex();i++){
+                   rs.next();
+                }
+                int x = rs.getInt("AreasClinicasID");
+                System.out.println(x);
+            } catch (SQLException ex) {
+                Logger.getLogger(EcraInicial.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            Aplicacoes aplicacao = new Aplicacoes();
+            aplicacao.setVisible(true);
+            this.setVisible(false);
+        }
+        
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void ServicoCBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ServicoCBActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ServicoCBActionPerformed
 
     /**
      * @param args the command line arguments
@@ -163,19 +213,151 @@ public class EcraInicial extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new EcraInicial().setVisible(true);
+                try {
+                    new EcraInicial().setVisible(true);
+                } catch (SQLException ex) {
+                    Logger.getLogger(EcraInicial.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(EcraInicial.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
+    
+    public void setRegiao() throws SQLException{
+        smt = con.createStatement();
+        rs = smt.executeQuery("SELECT * FROM REGIOES");
+        while(rs.next()){
+            RegiaoCB.addItem(rs.getString(2));
+        }
+        ActionListener ServicoAL = new ActionListener() {//add actionlistner to listen for change
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    AreaClinicaCB.removeAllItems();
+                    rs = smt.executeQuery("SELECT * FROM Servicos WHERE CentrosID = "+CentroID);
+                    for(i=0;i<=ServicoCB.getSelectedIndex();i++){
+                        rs.next();
+                    }
+                    ServicoID = rs.getInt("ServicosID");
+                    rs = smt.executeQuery("SELECT Nome FROM AreasClinicas WHERE ServicosID = "+ ServicoID);
+                    while(rs.next()){
+                        AreaClinicaCB.addItem(rs.getString("Nome"));
+                    }
+                }catch (SQLException ex) {
+                    Logger.getLogger(EcraInicial.class.getName()).log(Level.SEVERE, null, ex);
+                }              
+        }};
+        ActionListener CentroAL = new ActionListener() {//add actionlistner to listen for change
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    AreaClinicaCB.removeAllItems();
+                    ServicoCB.removeActionListener(ServicoAL);
+                    ServicoCB.removeAllItems();
+                    rs = smt.executeQuery("SELECT * FROM Centros WHERE HospitaisID = "+HospitalID);
+                    for(i=0;i<=CentroCB.getSelectedIndex();i++){
+                        rs.next();
+                    }
+                    CentroID = rs.getInt("CentrosID");
+                    rs = smt.executeQuery("SELECT Nome FROM Servicos WHERE CentrosID = "+ CentroID);
+                    while(rs.next()){
+                        ServicoCB.addItem(rs.getString("Nome"));
+                    }
+                    ServicoCB.addActionListener(ServicoAL);
+                }catch (SQLException ex) {
+                    Logger.getLogger(EcraInicial.class.getName()).log(Level.SEVERE, null, ex);
+                }              
+        }};
+        ActionListener HospitalAL = new ActionListener() {//add actionlistner to listen for change
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    AreaClinicaCB.removeAllItems();
+                    ServicoCB.removeActionListener(ServicoAL);
+                    ServicoCB.removeAllItems();
+                    CentroCB.removeActionListener(CentroAL);
+                    CentroCB.removeAllItems();
+                    rs = smt.executeQuery("SELECT * FROM Hospitais WHERE CentroHID = "+CentroHID);
+                    for(i=0;i<=HospitalCB.getSelectedIndex();i++){
+                        rs.next();
+                    }
+                    HospitalID = rs.getInt("HospitaisID");
+                    rs = smt.executeQuery("SELECT Nome FROM Centros WHERE HospitaisID = "+ HospitalID);
+                    while(rs.next()){
+                        CentroCB.addItem(rs.getString("Nome"));
+                    }
+                    CentroCB.addActionListener(CentroAL);
+                }catch (SQLException ex) {
+                    Logger.getLogger(EcraInicial.class.getName()).log(Level.SEVERE, null, ex);
+                }              
+        }};
+        ActionListener CentroHAL = new ActionListener() {//add actionlistner to listen for change
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    AreaClinicaCB.removeAllItems();
+                    ServicoCB.removeActionListener(ServicoAL);
+                    ServicoCB.removeAllItems();
+                    CentroCB.removeActionListener(CentroAL);
+                    CentroCB.removeAllItems();
+                    HospitalCB.removeActionListener(HospitalAL);
+                    HospitalCB.removeAllItems();
+                    rs = smt.executeQuery("SELECT * FROM Centro_Hospitalar WHERE RegioesID = "+RegiaoID);
+                    for(i=0;i<=CentroHCB.getSelectedIndex();i++){
+                        rs.next();
+                    }
+                    CentroHID = rs.getInt("CentroHID");
+                    rs = smt.executeQuery("SELECT Nome FROM Hospitais WHERE CentroHID= "+CentroHID);
+                    while(rs.next()){
+                        HospitalCB.addItem(rs.getString("Nome"));
+                    }
+                    HospitalCB.addActionListener(HospitalAL);
+                }catch (SQLException ex) {
+                    Logger.getLogger(EcraInicial.class.getName()).log(Level.SEVERE, null, ex);
+                }              
+        }};
+        ActionListener RegiaoAL = new ActionListener() {//add actionlistner to listen for change
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    AreaClinicaCB.removeAllItems();
+                    ServicoCB.removeActionListener(ServicoAL);
+                    ServicoCB.removeAllItems();
+                    CentroCB.removeActionListener(CentroAL);
+                    CentroCB.removeAllItems();
+                    HospitalCB.removeActionListener(HospitalAL);
+                    CentroHCB.removeActionListener(CentroHAL);
+                    HospitalCB.removeAllItems();
+                    CentroHCB.removeAllItems();
+                    rs = smt.executeQuery("SELECT * FROM REGIOES");
+                    for(i=0;i<=RegiaoCB.getSelectedIndex();i++){
+                        rs.next();
+                    }
+                    RegiaoID = rs.getInt("RegioesID");
+                    System.out.println(RegiaoID);
+                    rs = smt.executeQuery("SELECT Nome FROM Centro_Hospitalar WHERE RegioesID= "+RegiaoID);
+                    while(rs.next()){
+                        CentroHCB.addItem(rs.getString("Nome"));
+                    }
+                    CentroHCB.addActionListener(CentroHAL);
+                    }catch (SQLException ex) {
+                        Logger.getLogger(EcraInicial.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                
+                
+        }};
+        RegiaoCB.addActionListener(RegiaoAL);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> AreaClinicaCB;
+    private javax.swing.JComboBox<String> CentroCB;
+    private javax.swing.JComboBox<String> CentroHCB;
+    private javax.swing.JComboBox<String> HospitalCB;
+    private javax.swing.JComboBox<String> RegiaoCB;
+    private javax.swing.JComboBox<String> ServicoCB;
     private javax.swing.JButton jButton1;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JComboBox<String> jComboBox2;
-    private javax.swing.JComboBox<String> jComboBox3;
-    private javax.swing.JComboBox<String> jComboBox4;
-    private javax.swing.JComboBox<String> jComboBox5;
-    private javax.swing.JComboBox<String> jComboBox6;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
