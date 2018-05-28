@@ -12,6 +12,7 @@ import java.sql.Statement;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -96,10 +97,13 @@ public class MeiosComplementaresRegisto extends javax.swing.JFrame {
             i++;
         }
         rs = smt.executeQuery("SELECT DISTINCT S.Nome From Salas S,Intervencao I \n" +
-"					   WHERE S.SalasID = I.SalasID \n" +
-"					   AND S.AreasClinicasID = 5 \n" +
-"					   AND ( I.Data <> " +hojeL + "\n" +
-"						OR HoraI <> " + atual.getHours()+")");
+                              "WHERE S.SalasID = I.SalasID \n" +
+                              "AND S.AreasClinicasID = 5 \n" +
+                              "AND NOT EXISTS(Select S2.SalasID From Salas S2, Intervencao I2 \n" +
+"									       WHERE I2.Data = "+ hojeL +"\n" +
+"									       AND I2.HoraI = "+ atual.getHours() +"\n" +
+"									       AND s2.SalasID = I2.SalasID\n" +
+"									       AND S.SalasID = S2.SalasID )");
         while(rs.next()){
             salaCB.addItem(rs.getString("Nome"));
         }
@@ -256,6 +260,19 @@ public class MeiosComplementaresRegisto extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         descricao = descricaoET.getText();
         IntervencaoID = (tipoCB.getSelectedIndex()+1);
+        for(i=0;i<jTable1.getRowCount();i++){          
+                if (jTable1.getValueAt(i,2).equals(true)){
+                    break;
+            }
+        }
+        if (i == jTable1.getRowCount()){
+            JOptionPane.showMessageDialog(null, "Sem Colaborador");
+        }
+        else if (pacienteCB.getSelectedItem() == (null) || tipoCB.getSelectedItem() == null || salaCB.getSelectedItem() == null ){
+            JOptionPane.showMessageDialog(null, "Faltam Dados");
+        }
+        else
+        {
         try {
             rs = smt.executeQuery("SELECT P.PacienteID,P.Nome FROM Pacientes P,PacienteArea A WHERE A.AreasClinicasID = "+ AreaClinicaID + " AND A.PacienteID = P.PacienteID");
             for (i=0;i<=pacienteCB.getSelectedIndex();i++){
@@ -298,13 +315,17 @@ public class MeiosComplementaresRegisto extends javax.swing.JFrame {
                     rs.updateInt("IntervencaoID", IntervencaoID);
                     rs.insertRow();
                     rs.moveToCurrentRow();
-                }
-            }           
+                }   
+            }
+            JOptionPane.showMessageDialog(null, "Dados atualizados");
+            MeiosComplementares meios = new MeiosComplementares(AreaClinicaID,con);
+            meios.setVisible(true);
+            this.setVisible(false); 
         } catch (SQLException ex) {
             Logger.getLogger(MeiosComplementaresRegisto.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void salaCBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salaCBActionPerformed
