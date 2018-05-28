@@ -110,7 +110,7 @@ public class Aplicacoes extends javax.swing.JFrame {
         } catch (SQLException ex) {
             Logger.getLogger(Aplicacoes.class.getName()).log(Level.SEVERE, null, ex);
         }
-       
+        
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
