@@ -74,9 +74,12 @@ public class MeiosComplementaresRegisto extends javax.swing.JFrame {
                                 "AND CT.data = "+hojeL +
                                 " AND T.HoraI <= "+atual.getHours() +
                                 " AND T.HoraF >= "+ atual.getHours() +
-                                "AND NOT EXISTS ( SELECT ColaboradoresID FROM Equipa E,Intervencao I \n" +
-"						  WHERE E.IntervencaoID=I.IntervencaoID \n" +
-"						  AND(I.Data = "+hojeL + "OR T.HoraI = "+atual.getHours() +"))");
+                                "AND NOT EXISTS ( SELECT C2.ColaboradoresID FROM Equipa E2 ,Intervencao I2,Colaboradores C2 "
+                                        + "       WHERE E2.IntervencaoID = I2.IntervencaoID "
+                                        + "       AND C.ColaboradoresID = C2.ColaboradoresID "
+                                        + "       AND E2.ColaboradoresID = C2.ColaboradoresID"
+                                        + "       AND I2.Data = "+ hojeL +""
+                                        + "       AND I2.HoraI = "+ atual.getHours()+")");
         DefaultTableModel model = (DefaultTableModel)jTable1.getModel();
         i=jTable1.getRowCount();
         while(i!=0){
@@ -95,8 +98,8 @@ public class MeiosComplementaresRegisto extends javax.swing.JFrame {
         rs = smt.executeQuery("SELECT DISTINCT S.Nome From Salas S,Intervencao I \n" +
 "					   WHERE S.SalasID = I.SalasID \n" +
 "					   AND S.AreasClinicasID = 5 \n" +
-"					   AND ( I.Data = " +hojeL + "\n" +
-"							OR HoraI <> " + atual.getHours()+")");
+"					   AND ( I.Data <> " +hojeL + "\n" +
+"						OR HoraI <> " + atual.getHours()+")");
         while(rs.next()){
             salaCB.addItem(rs.getString("Nome"));
         }
