@@ -96,7 +96,7 @@ public class Aplicacoes extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        Marcacoes marcacoes = new Marcacoes();
+        Marcacoes marcacoes = new Marcacoes(AreaClinicaID,con);
         marcacoes.setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_jButton3ActionPerformed

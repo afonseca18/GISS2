@@ -1,10 +1,18 @@
 package projecto;
 
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -21,7 +29,11 @@ import javax.swing.table.TableColumnModel;
  */
 public class Marcacoes extends javax.swing.JFrame {
     Calendar d = Calendar.getInstance();
-
+    int AreaClinicaID;
+    Connection con;
+    Statement smt;
+    ResultSet rs;
+    Long[] datas = new Long[7];
     /**
      * Creates new form Marcacoes
      */
@@ -29,6 +41,49 @@ public class Marcacoes extends javax.swing.JFrame {
         initComponents();
         Date dom = new Date();
         setTable(dom);
+    }
+    public Marcacoes (int AreaClinicaID,Connection con){
+        initComponents();
+        this.AreaClinicaID = AreaClinicaID;
+        this.con = con;
+        Date dom = new Date();
+        setTable(dom);
+         ActionListener RecursosAL = new ActionListener() {//add actionlistner to listen for change
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setCB();
+              }
+        
+            };
+         recursosCB.addActionListener(RecursosAL);
+    }
+    
+    public void setCB(){
+             if(recursosCB.getSelectedIndex()==0){
+                     salasCB.removeAllItems();
+                     try {
+                         smt = con.createStatement();
+                         rs = smt.executeQuery("SELECT C.Nome FROM ColabArea A,Colaboradores C WHERE C.ColaboradoresID = A.ColaboradoresID AND A.AreasClinicasID = " + AreaClinicaID);
+                         while(rs.next()){
+                             System.out.println(rs.getString(1));
+                             colaboradoresCB.addItem(rs.getString(1));
+                         }
+                     } catch (SQLException ex) {
+                         Logger.getLogger(Marcacoes.class.getName()).log(Level.SEVERE, null, ex);
+                     }
+                 }
+                 else{
+                     colaboradoresCB.removeAllItems();
+                     try {
+                         smt = con.createStatement();
+                         rs = smt.executeQuery("SELECT S.Nome FROM AreasClinicas A,Salas S WHERE S.AreasClinicasID = A.AreasClinicasID AND A.AreasClinicasID = " + AreaClinicaID);
+                         while(rs.next()){
+                             salasCB.addItem(rs.getString(1));
+                         }
+                     } catch (SQLException ex) {
+                         Logger.getLogger(Marcacoes.class.getName()).log(Level.SEVERE, null, ex);
+                     }
+                 }
     }
 
     /**
@@ -47,11 +102,9 @@ public class Marcacoes extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jComboBox2 = new javax.swing.JComboBox<>();
-        jComboBox4 = new javax.swing.JComboBox<>();
-        jLabel6 = new javax.swing.JLabel();
-        jComboBox5 = new javax.swing.JComboBox<>();
+        salasCB = new javax.swing.JComboBox<>();
+        colaboradoresCB = new javax.swing.JComboBox<>();
+        recursosCB = new javax.swing.JComboBox<>();
         jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -124,7 +177,13 @@ public class Marcacoes extends javax.swing.JFrame {
 
         jLabel3.setText("Salas");
 
-        jLabel6.setText("Recursos");
+        colaboradoresCB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                colaboradoresCBActionPerformed(evt);
+            }
+        });
+
+        recursosCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Humanos", "Materiais" }));
 
         jButton3.setText("Fazer Marcação");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -140,26 +199,21 @@ public class Marcacoes extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(40, 40, 40)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jComboBox4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
+                .addComponent(recursosCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel6)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jComboBox5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(41, 41, 41)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(colaboradoresCB, 0, 120, Short.MAX_VALUE)
+                            .addComponent(salasCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 882, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -176,14 +230,12 @@ public class Marcacoes extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
                             .addComponent(jLabel2)
-                            .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jComboBox4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(colaboradoresCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(recursosCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel3)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6)
-                            .addComponent(jComboBox5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(salasCB, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -216,6 +268,10 @@ public class Marcacoes extends javax.swing.JFrame {
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void colaboradoresCBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_colaboradoresCBActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_colaboradoresCBActionPerformed
 
     /**
      * @param args the command line arguments
@@ -261,6 +317,7 @@ public class Marcacoes extends javax.swing.JFrame {
             case(1):for (i=1;i<8;i++){
                         dom.setTime(c.getTimeInMillis());
                         jTable1.getTableHeader().getColumnModel().getColumn(i).setHeaderValue(sourceFormat.format(dom));
+                        datas[i-1] = c.getTimeInMillis();
                         c.add(Calendar.DAY_OF_MONTH, 1);
                     }
                     break;
@@ -268,6 +325,7 @@ public class Marcacoes extends javax.swing.JFrame {
                     for (i=1;i<8;i++){
                         dom.setTime(c.getTimeInMillis());
                         jTable1.getTableHeader().getColumnModel().getColumn(i).setHeaderValue(sourceFormat.format(dom));
+                        datas[i-1] = c.getTimeInMillis();
                         c.add(Calendar.DAY_OF_MONTH, 1);
                     }
                     break;
@@ -275,6 +333,7 @@ public class Marcacoes extends javax.swing.JFrame {
                     for (i=1;i<8;i++){
                         dom.setTime(c.getTimeInMillis());
                         jTable1.getTableHeader().getColumnModel().getColumn(i).setHeaderValue(sourceFormat.format(dom));
+                        datas[i-1] = c.getTimeInMillis();
                         c.add(Calendar.DAY_OF_MONTH, 1);
                     }
                     break;
@@ -282,6 +341,7 @@ public class Marcacoes extends javax.swing.JFrame {
                     for (i=1;i<8;i++){
                         dom.setTime(c.getTimeInMillis());
                         jTable1.getTableHeader().getColumnModel().getColumn(i).setHeaderValue(sourceFormat.format(dom));
+                        datas[i-1] = c.getTimeInMillis();
                         c.add(Calendar.DAY_OF_MONTH, 1);
                     }
                     break;
@@ -289,6 +349,7 @@ public class Marcacoes extends javax.swing.JFrame {
                     for (i=1;i<8;i++){
                         dom.setTime(c.getTimeInMillis());
                         jTable1.getTableHeader().getColumnModel().getColumn(i).setHeaderValue(sourceFormat.format(dom));
+                        datas[i-1] = c.getTimeInMillis();
                         c.add(Calendar.DAY_OF_MONTH, 1);
                     }
                     break;
@@ -296,6 +357,7 @@ public class Marcacoes extends javax.swing.JFrame {
                     for (i=1;i<8;i++){
                         dom.setTime(c.getTimeInMillis());
                         jTable1.getTableHeader().getColumnModel().getColumn(i).setHeaderValue(sourceFormat.format(dom));
+                        datas[i-1] = c.getTimeInMillis();
                         c.add(Calendar.DAY_OF_MONTH, 1);
                     }
                     break;
@@ -303,6 +365,7 @@ public class Marcacoes extends javax.swing.JFrame {
                     for (i=1;i<8;i++){
                         dom.setTime(c.getTimeInMillis());
                         jTable1.getTableHeader().getColumnModel().getColumn(i).setHeaderValue(sourceFormat.format(dom));
+                        datas[i-1] = c.getTimeInMillis();
                         c.add(Calendar.DAY_OF_MONTH, 1);
                     }
                     break;
@@ -311,18 +374,16 @@ public class Marcacoes extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> colaboradoresCB;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JComboBox<String> jComboBox2;
-    private javax.swing.JComboBox<String> jComboBox4;
-    private javax.swing.JComboBox<String> jComboBox5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JComboBox<String> recursosCB;
+    private javax.swing.JComboBox<String> salasCB;
     // End of variables declaration//GEN-END:variables
 }
