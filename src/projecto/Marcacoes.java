@@ -14,6 +14,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 
 /*
@@ -225,6 +226,7 @@ public class Marcacoes extends javax.swing.JFrame {
                     if(recursosCB.getSelectedIndex()==0){  
                             salasCB.removeActionListener(SalasAL);
                             colaboradoresCB.removeActionListener(ColaboradoresAL); 
+                            materiaisCB.removeActionListener(MateriaisAL);
                             colaboradoresCB.removeAllItems();
                             salasCB.removeAllItems();
                             resetTable();
@@ -242,6 +244,7 @@ public class Marcacoes extends javax.swing.JFrame {
                             salasCB.removeActionListener(SalasAL);
                             colaboradoresCB.removeActionListener(ColaboradoresAL);
                             colaboradoresCB.removeAllItems();
+                            materiaisCB.removeActionListener(MateriaisAL);
                             salasCB.removeAllItems();
                             resetTable();
                             try {
@@ -450,7 +453,10 @@ public class Marcacoes extends javax.swing.JFrame {
     }//GEN-LAST:event_colaboradoresCBActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-
+        if (jTable1.getSelectedColumn()==-1 || jTable1.getSelectedRow()==-1){
+            JOptionPane.showMessageDialog(null, "Selecione uma hora");
+        }
+        else{
         try {
             Marcar marcar = new Marcar(AreaClinicaID,con,datas[jTable1.getSelectedColumn()-1],jTable1.getSelectedRow());
             marcar.setVisible(true);
@@ -458,6 +464,7 @@ public class Marcacoes extends javax.swing.JFrame {
         } catch (SQLException ex) {
             Logger.getLogger(Marcacoes.class.getName()).log(Level.SEVERE, null, ex);
         }
+        }   
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**

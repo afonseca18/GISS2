@@ -289,7 +289,7 @@ public class Marcar extends javax.swing.JFrame {
                 rs.updateInt("AreasClinicasID", AreaClinicaID);
                 rs.updateInt("SalasID",SalaID);
                 rs.updateInt("TipoIntervencaoID",IntervencaoID);
-                rs.updateInt("Estado",1);
+                rs.updateInt("Estado",0);
                 rs.updateInt("PacienteID",PacientID);
                 rs.updateString("Descricao",descricao);
                 rs.updateInt("HoraI", horas);
