@@ -59,7 +59,7 @@ public class MeiosComplementares extends javax.swing.JFrame {
                    rs=smt.executeQuery("SELECT T.Nome,I.Data FROM Intervencao I,TipoIntervencao T "
                                       + "WHERE I.TipoIntervencaoID = T.TipoIntervencaoID "
                                       + "AND I.PacienteID = " +PacienteID+" "
-                                      + "AND I.AreaSClinicaSID = "+ AreaClinicaID + "AND I.Estado = 0");
+                                      + "AND I.AreaSClinicaSID = "+ AreaClinicaID + "AND I.Estado = 0 AND I.TipoIntervencaoID <>"+ 1);
                    DefaultTableModel model = (DefaultTableModel)jTable1.getModel();
                    i=jTable1.getRowCount();
                    while(i!=0){
