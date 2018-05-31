@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package projecto;
 
 import java.awt.event.ActionEvent;
@@ -16,12 +12,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-/**
- *
- * @author Alexandre
- */
+
 public class Consulta extends javax.swing.JFrame {
     
     int AreaClinicaID;
@@ -51,14 +45,14 @@ public class Consulta extends javax.swing.JFrame {
         ActionListener PacienteAL = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            if(pacienteCB.getSelectedIndex()!= -1){
-               try {
-                   rs= smt.executeQuery("SELECT P.PacienteID,P.Nome,P.Idade FROM Pacientes P,PacienteArea A WHERE A.AreasClinicasID = " + AreaClinicaID +" AND A.PacienteID = P.PacienteID");
-                   for (i =0;i<=pacienteCB.getSelectedIndex();i++){
-                       rs.next();
-                   }
-                   PacienteID = rs.getInt("PacienteID");
-                   rs=smt.executeQuery("SELECT T.Nome,I.Data, S.Nome, I.HoraI,I.Estado,I.HoraF, I.IntervencaoID\n"+
+                if(pacienteCB.getSelectedIndex()!= -1){
+                     try {
+                        rs= smt.executeQuery("SELECT P.PacienteID,P.Nome,P.Idade FROM Pacientes P,PacienteArea A WHERE A.AreasClinicasID = " + AreaClinicaID +" AND A.PacienteID = P.PacienteID");
+                        for (i =0;i<=pacienteCB.getSelectedIndex();i++){
+                            rs.next();
+                        }
+                PacienteID = rs.getInt("PacienteID");
+                rs=smt.executeQuery("SELECT T.Nome,I.Data, S.Nome, I.HoraI,I.Estado,I.HoraF, I.IntervencaoID\n"+
 "                                         FROM Intervencao I,TipoIntervencao T, Salas S, AreasClinicas AC\n" +
 "                                         WHERE I.TipoIntervencaoID = T.TipoIntervencaoID\n" +
 "                                         AND I.PacienteID = "+PacienteID+"\n" +
@@ -76,7 +70,7 @@ public class Consulta extends javax.swing.JFrame {
                    DateFormat sourceFormat = new SimpleDateFormat("dd/MM/yyyy");
                    Date date = new Date();
                    while(rs.next()){
-                       model.addRow(new Object[]{"IntervencaoID","Sala","Efectuada","Tipo de Intervenção", "Data"});
+                        model.addRow(new Object[]{"IntervencaoID","Sala","Efectuada","Tipo de Intervenção", "Data"});
                         model.setValueAt(rs.getInt("IntervencaoID"),i, 0);
                         model.setValueAt(rs.getString(1),i,1);
                         model.setValueAt(rs.getString(3),i,2);
@@ -95,6 +89,7 @@ public class Consulta extends javax.swing.JFrame {
         
           
     }
+
 
     
     @SuppressWarnings("unchecked")
@@ -117,6 +112,11 @@ public class Consulta extends javax.swing.JFrame {
         jLabel2.setText("Consultas");
 
         jButton2.setText("Voltar");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Consultar");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -189,8 +189,8 @@ public class Consulta extends javax.swing.JFrame {
                     .addComponent(pacientetv)
                     .addComponent(pacienteCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(9, 9, 9)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton2)
                     .addComponent(jButton3)))
@@ -200,16 +200,45 @@ public class Consulta extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
+        if (jTable2.getSelectedColumn()==-1 || jTable2.getSelectedRow()==-1){
+            JOptionPane.showMessageDialog(null, "Selecione uma intervenção");
+        }
+        else{
+            int linha= jTable2.getSelectedRow();
+           
+         
+            ConsultaVer consultaVer;
+            try {
+                consultaVer = new ConsultaVer(Integer.valueOf(jTable2.getValueAt(linha,3).toString()),AreaClinicaID,con,pacienteCB.getSelectedItem().toString(),
+                        jTable2.getValueAt(linha,1).toString(),jTable2.getValueAt(linha,2).toString(),
+                        Integer.valueOf(jTable2.getValueAt(linha,0).toString()));
+                consultaVer.setVisible(true);
+                this.setVisible(false);
+            } catch (SQLException ex) {
+                Logger.getLogger(Consulta.class.getName()).log(Level.SEVERE, null, ex);
+            }
+           
+            
+         
+         }
+        
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void pacienteCBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pacienteCBActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_pacienteCBActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+         try {
+            Aplicacoes aplicacoes = new Aplicacoes(AreaClinicaID,con);
+            aplicacoes.setVisible(true);
+            this.setVisible(false);
+        } catch (SQLException ex) {
+            Logger.getLogger(MeiosComplementares.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -251,4 +280,5 @@ public class Consulta extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> pacienteCB;
     private javax.swing.JLabel pacientetv;
     // End of variables declaration//GEN-END:variables
+
 }
