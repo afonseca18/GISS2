@@ -139,7 +139,6 @@ public class Marcacoes extends javax.swing.JFrame {
                             try {
                                  smt = con.createStatement();
                                  rs = smt.executeQuery("SELECT R.RecursosID FROM Salas S,Recursos R,RecSalas SR WHERE SR.SalasID = S.SalasID AND SR.RecursosID = R.RecursosID AND S.SalasID = "+SalaID);
-                                 System.out.println("SELECT R.RecursosID FROM Salas S,Recursos R,RecSalas SR WHERE SR.SalasID = S.SalasID AND SR.RecursosID = R.RecursosID AND S.SalasID = "+SalaID);
                                  for(i=0;i<=materiaisCB.getSelectedIndex();i++){
                                      rs.next();
                                  }
@@ -153,7 +152,6 @@ public class Marcacoes extends javax.swing.JFrame {
                                             jTable1.setValueAt("<html><font color='blue'>Disponivel</font></html>", j, i+1);
                                             while(rs.next()){
                                                 if (rs.getInt(1)<=j && rs.getInt(2)>=j){
-                                                    System.out.println(i);
                                                     jTable1.setValueAt("<html><font color='red'>Indisponivel</font></html>", j, i+1);
                                                 }
                                             }
@@ -189,7 +187,6 @@ public class Marcacoes extends javax.swing.JFrame {
                                             jTable1.setValueAt("<html><font color='blue'>Disponivel</font></html>", j, i+1);
                                             while(rs.next()){
                                                 if (rs.getInt(1)<=j && rs.getInt(2)>=j){
-                                                    System.out.println(i);
                                                     jTable1.setValueAt("<html><font color='red'>Indisponivel</font></html>", j, i+1);
                                                 }
                                             }
@@ -273,6 +270,7 @@ public class Marcacoes extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         materiaisCB = new javax.swing.JComboBox<>();
         jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -361,6 +359,13 @@ public class Marcacoes extends javax.swing.JFrame {
             }
         });
 
+        jButton4.setText("Voltar");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -392,6 +397,10 @@ public class Marcacoes extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1)
                 .addGap(41, 41, 41))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -418,7 +427,9 @@ public class Marcacoes extends javax.swing.JFrame {
                     .addComponent(jButton2)
                     .addComponent(jButton1)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 415, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(67, 67, 67))
+                .addGap(10, 10, 10)
+                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         pack();
@@ -456,6 +467,16 @@ public class Marcacoes extends javax.swing.JFrame {
         }
         }   
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+       try{
+           Aplicacoes app = new Aplicacoes(AreaClinicaID,con);
+           app.setVisible(true);
+           this.setVisible(false);
+       } catch (SQLException ex) {
+            Logger.getLogger(Marcacoes.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -596,6 +617,7 @@ public class Marcacoes extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
