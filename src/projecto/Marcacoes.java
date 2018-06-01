@@ -193,7 +193,7 @@ public class Marcacoes extends javax.swing.JFrame {
                                         }                                   
                                  }
                                 smt = con.createStatement();
-                                rs = smt.executeQuery("SELECT R.Nome FROM Salas S,Recursos R,RecSalas SR WHERE SR.SalasID = S.SalasID AND SR.RecursosID = R.RecursosID AND S.SalasID = "+SalaID); 
+                                rs = smt.executeQuery("SELECT Distinct R.Nome FROM Salas S,Recursos R,RecSalas SR WHERE SR.SalasID = S.SalasID AND SR.RecursosID = R.RecursosID AND S.SalasID = "+SalaID); 
                                 while (rs.next()){
                                     materiaisCB.addItem(rs.getString(1));
                                 }

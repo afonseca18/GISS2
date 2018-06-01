@@ -277,7 +277,7 @@ public class Marcar extends javax.swing.JFrame {
                     rs.next();
                 }
                 SalaID=rs.getInt(1);
-                rs = smt.executeQuery("SELECT R.RecursosID FROM Salas S,Recursos R,RecSalas SR WHERE SR.SalasID = S.SalasID AND SR.RecursosID = R.RecursosID AND S.SalasID = "+SalaID+" Order By R.RecursosID"); 
+                rs = smt.executeQuery("SELECT Distinct R.RecursosID,R.Nome FROM Salas S,Recursos R,RecSalas SR WHERE SR.SalasID = S.SalasID AND SR.RecursosID = R.RecursosID AND S.SalasID = "+SalaID+" Order By R.RecursosID"); 
                 for(i=0;i<=materiaisCB.getSelectedIndex();i++){
                     rs.next();
                 }
@@ -354,7 +354,7 @@ public class Marcar extends javax.swing.JFrame {
                                  }
                                 SalaID = rs.getInt(1);
                                 smt = con.createStatement();
-                                rs = smt.executeQuery("SELECT R.Nome FROM Salas S,Recursos R,RecSalas SR WHERE SR.SalasID = S.SalasID AND SR.RecursosID = R.RecursosID AND S.SalasID = "+SalaID+" Order By R.RecursosID"); 
+                                rs = smt.executeQuery("SELECT Distinct R.Nome,R.RecursosID FROM Salas S,Recursos R,RecSalas SR WHERE SR.SalasID = S.SalasID AND SR.RecursosID = R.RecursosID AND S.SalasID = "+SalaID+" Order By R.RecursosID"); 
                                 while (rs.next()){
                                     materiaisCB.addItem(rs.getString(1));
                                 }
