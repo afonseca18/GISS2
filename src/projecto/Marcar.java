@@ -25,6 +25,7 @@ public class Marcar extends javax.swing.JFrame {
     int PacientID;
     int SalaID;
     int horas;
+    int materiaisID;
     Statement smt2;
     
     public Marcar(){
@@ -114,10 +115,11 @@ public class Marcar extends javax.swing.JFrame {
         salaCB = new javax.swing.JComboBox<>();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+        jLabel2 = new javax.swing.JLabel();
+        materiaisCB = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Marcação");
-        setPreferredSize(new java.awt.Dimension(663, 410));
         setResizable(false);
 
         jButton1.setText("Marcar");
@@ -177,6 +179,8 @@ public class Marcar extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(jTable1);
 
+        jLabel2.setText("Material");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -198,15 +202,16 @@ public class Marcar extends javax.swing.JFrame {
                                 .addComponent(jLabel3)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(tipoCB, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(263, 263, 263))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(materiaisCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 511, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(67, 67, 67))))
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(67, 67, 67))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -222,7 +227,9 @@ public class Marcar extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(salaCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel2)
+                    .addComponent(materiaisCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -270,6 +277,12 @@ public class Marcar extends javax.swing.JFrame {
                     rs.next();
                 }
                 SalaID=rs.getInt(1);
+                rs = smt.executeQuery("SELECT R.RecursosID FROM Salas S,Recursos R,RecSalas SR WHERE SR.SalasID = S.SalasID AND SR.RecursosID = R.RecursosID AND S.SalasID = "+SalaID+" Order By R.RecursosID"); 
+                for(i=0;i<=materiaisCB.getSelectedIndex();i++){
+                    rs.next();
+                }
+                materiaisID=rs.getInt(1);
+                
                 smt2=con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
                 rs = smt2.executeQuery("SELECT * FROM Intervencao");
                 rs.moveToInsertRow();
@@ -281,6 +294,7 @@ public class Marcar extends javax.swing.JFrame {
                 rs.updateInt("HoraI", horas);
                 rs.updateInt("HoraF", horas);
                 rs.updateLong("Data", hojeL);
+                rs.updateInt("RecursoSalaID", materiaisID);
                 rs.insertRow();
                 rs.moveToCurrentRow();
                 rs = smt2.executeQuery("SELECT * FROM Intervencao ORDER BY IntervencaoID DESC");
@@ -320,7 +334,37 @@ public class Marcar extends javax.swing.JFrame {
     }//GEN-LAST:event_pacienteCBActionPerformed
 
     private void salaCBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salaCBActionPerformed
-        // TODO add your handling code here:
+      if (salaCB.getSelectedIndex()==-1){                          
+                        }
+                        else{
+                            try {
+                                materiaisCB.removeAllItems();
+                                smt = con.createStatement();
+                                rs = smt.executeQuery("SELECT DISTINCT S.SalasID, S.Nome From Salas S,Intervencao I,AreasClinicas A \n" +
+                                                       "WHERE I.AreasClinicasID=A.AreasClinicasID\n" +
+                                                       "and S.AreasClinicasID=A.AreasClinicasID\n" +
+                                                       "AND S.AreasClinicasID ="+AreaClinicaID+" \n" +
+                                                       "AND NOT EXISTS(Select S2.SalasID From Salas S2, Intervencao I2 \n" +
+                                                                                      "WHERE I2.Data = "+hojeL+"\n" +
+                                                                                      "AND I2.HoraI = "+horas+"\n" +
+                                                                                      "AND s2.SalasID = I2.SalasID\n" +
+                                                                                      "AND S.SalasID = S2.SalasID ) ORDER BY S.SalasID");
+                                for(i=0;i<=salaCB.getSelectedIndex();i++){
+                                     rs.next();
+                                 }
+                                SalaID = rs.getInt(1);
+                                smt = con.createStatement();
+                                rs = smt.executeQuery("SELECT R.Nome FROM Salas S,Recursos R,RecSalas SR WHERE SR.SalasID = S.SalasID AND SR.RecursosID = R.RecursosID AND S.SalasID = "+SalaID+" Order By R.RecursosID"); 
+                                while (rs.next()){
+                                    materiaisCB.addItem(rs.getString(1));
+                                }
+                                
+
+                                } catch (SQLException ex) {
+                                    Logger.getLogger(Marcacoes.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                materiaisCB.setSelectedIndex(-1);
+                    }
     }//GEN-LAST:event_salaCBActionPerformed
 
     /**
@@ -362,10 +406,12 @@ public class Marcar extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JComboBox<String> materiaisCB;
     private javax.swing.JComboBox<String> pacienteCB;
     private javax.swing.JComboBox<String> salaCB;
     private javax.swing.JComboBox<String> tipoCB;
