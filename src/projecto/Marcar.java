@@ -80,14 +80,15 @@ public class Marcar extends javax.swing.JFrame {
             model.setValueAt(rs.getInt(3), i, 3);
             i++;
         }
-        rs = smt.executeQuery("SELECT DISTINCT S.Nome From Salas S,Intervencao I \n" +
-                              "WHERE S.SalasID = I.SalasID \n" +
-                              "AND S.AreasClinicasID = 5 \n" +
-                              "AND NOT EXISTS(Select S2.SalasID From Salas S2, Intervencao I2 \n" +
-"									       WHERE I2.Data = "+ hojeL +"\n" +
-"									       AND I2.HoraI = "+ horas +"\n" +
+        rs = smt.executeQuery("SELECT DISTINCT S.Nome,S.SalasID From Salas S,Intervencao I,AreasClinicas A \n" +
+                                                "WHERE I.AreasClinicasID=A.AreasClinicasID\n" +
+                                                "and S.AreasClinicasID=A.AreasClinicasID\n" +
+                                                "AND S.AreasClinicasID ="+AreaClinicaID+" \n" +
+                                                "AND NOT EXISTS(Select S2.SalasID From Salas S2, Intervencao I2 \n" +
+"                                                                              WHERE I2.Data = "+hojeL+"\n" +
+"									       AND I2.HoraI = "+horas+"\n" +
 "									       AND s2.SalasID = I2.SalasID\n" +
-"									       AND S.SalasID = S2.SalasID )");
+"									       AND S.SalasID = S2.SalasID ) ORDER BY S.SalasID");
         while(rs.next()){
             salaCB.addItem(rs.getString("Nome"));
         }
@@ -256,15 +257,19 @@ public class Marcar extends javax.swing.JFrame {
                     rs.next();
                 }
                 PacientID=rs.getInt(1);
-                rs = smt.executeQuery("SELECT DISTINCT S.SalasID,S.Nome From Salas S,Intervencao I \n" +
-                    "					   WHERE S.SalasID = I.SalasID \n" +
-                    "					   AND S.AreasClinicasID = 5 \n" +
-                    "					   AND ( I.Data = " +hojeL + "\n" +
-                    "							OR HoraI <> " + horas +")");
+                rs = smt.executeQuery("SELECT DISTINCT S.SalasID, S.Nome From Salas S,Intervencao I,AreasClinicas A \n" +
+                                                "WHERE I.AreasClinicasID=A.AreasClinicasID\n" +
+                                                "and S.AreasClinicasID=A.AreasClinicasID\n" +
+                                                "AND S.AreasClinicasID ="+AreaClinicaID+" \n" +
+                                                "AND NOT EXISTS(Select S2.SalasID From Salas S2, Intervencao I2 \n" +
+"                                                                              WHERE I2.Data = "+hojeL+"\n" +
+"									       AND I2.HoraI = "+horas+"\n" +
+"									       AND s2.SalasID = I2.SalasID\n" +
+"									       AND S.SalasID = S2.SalasID ) ORDER BY S.SalasID" );
                 for (i=0;i<=salaCB.getSelectedIndex();i++){
                     rs.next();
                 }
-                SalaID=rs.getInt("SalasID");
+                SalaID=rs.getInt(1);
                 smt2=con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
                 rs = smt2.executeQuery("SELECT * FROM Intervencao");
                 rs.moveToInsertRow();
@@ -285,7 +290,6 @@ public class Marcar extends javax.swing.JFrame {
                 for(i=0;i<jTable1.getRowCount();i++){
                     rs = smt2.executeQuery("SELECT * FROM Equipa");
                     if (jTable1.getValueAt(i,2).equals(true)){
-                        System.out.println(i);
                         rs.moveToInsertRow();
                         rs.updateInt("ColaboradoresID",Integer.valueOf(jTable1.getValueAt(i, 3).toString()));
                         rs.updateInt("IntervencaoID", IntervencaoID);

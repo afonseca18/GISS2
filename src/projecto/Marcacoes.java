@@ -139,7 +139,6 @@ public class Marcacoes extends javax.swing.JFrame {
                             try {
                                  smt = con.createStatement();
                                  rs = smt.executeQuery("SELECT R.RecursosID FROM Salas S,Recursos R,RecSalas SR WHERE SR.SalasID = S.SalasID AND SR.RecursosID = R.RecursosID AND S.SalasID = "+SalaID);
-                                 System.out.println("SELECT R.RecursosID FROM Salas S,Recursos R,RecSalas SR WHERE SR.SalasID = S.SalasID AND SR.RecursosID = R.RecursosID AND S.SalasID = "+SalaID);
                                  for(i=0;i<=materiaisCB.getSelectedIndex();i++){
                                      rs.next();
                                  }
@@ -153,7 +152,6 @@ public class Marcacoes extends javax.swing.JFrame {
                                             jTable1.setValueAt("<html><font color='blue'>Disponivel</font></html>", j, i+1);
                                             while(rs.next()){
                                                 if (rs.getInt(1)<=j && rs.getInt(2)>=j){
-                                                    System.out.println(i);
                                                     jTable1.setValueAt("<html><font color='red'>Indisponivel</font></html>", j, i+1);
                                                 }
                                             }
@@ -189,7 +187,6 @@ public class Marcacoes extends javax.swing.JFrame {
                                             jTable1.setValueAt("<html><font color='blue'>Disponivel</font></html>", j, i+1);
                                             while(rs.next()){
                                                 if (rs.getInt(1)<=j && rs.getInt(2)>=j){
-                                                    System.out.println(i);
                                                     jTable1.setValueAt("<html><font color='red'>Indisponivel</font></html>", j, i+1);
                                                 }
                                             }

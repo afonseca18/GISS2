@@ -56,7 +56,7 @@ public class MeiosComplementaresRegisto extends javax.swing.JFrame {
         rs = smt.executeQuery("SELECT DISTINCT C.Nome,E.Nome,C.ColaboradoresID FROM Colaboradores C,"
                 + " Especialidades E,Turnos T,ColabArea CA,"
                 + " ColaboradoresTurnos CT,ColaboradoresEspecialidades CE,AreasClinicas AC " +
-                                "WHERE CA.AreasClinicasID = "+AreaClinicaID +
+                                "WHERE CA.AreasClinicasID = "+ AreaClinicaID +
                                 " AND CA.ColaboradoresID = C.ColaboradoresID " +
                                 "AND CA.AreasClinicasID = AC.AreasClinicasID " +
                                 "AND CE.ColaboradoresID = C.ColaboradoresID " +
@@ -67,11 +67,11 @@ public class MeiosComplementaresRegisto extends javax.swing.JFrame {
                                 " AND T.HoraI <= "+atual.getHours() +
                                 " AND T.HoraF >= "+ atual.getHours() +
                                 "AND NOT EXISTS ( SELECT C2.ColaboradoresID FROM Equipa E2 ,Intervencao I2,Colaboradores C2 "
-                                        + "       WHERE E2.IntervencaoID = I2.IntervencaoID "
-                                        + "       AND C.ColaboradoresID = C2.ColaboradoresID "
-                                        + "       AND E2.ColaboradoresID = C2.ColaboradoresID"
-                                        + "       AND I2.Data = "+ hojeL +""
-                                        + "       AND I2.HoraI = "+ atual.getHours()+")");
+                                        + "WHERE E2.IntervencaoID = I2.IntervencaoID "
+                                        + "AND C.ColaboradoresID = C2.ColaboradoresID "
+                                        + "AND E2.ColaboradoresID = C2.ColaboradoresID "
+                                        + "AND I2.Data = "+ hojeL +""
+                                        + " AND I2.HoraI = "+ atual.getHours()+")");
         DefaultTableModel model = (DefaultTableModel)jTable1.getModel();
         i=jTable1.getRowCount();
         while(i!=0){
@@ -87,14 +87,15 @@ public class MeiosComplementaresRegisto extends javax.swing.JFrame {
             model.setValueAt(rs.getInt(3), i, 3);
             i++;
         }
-        rs = smt.executeQuery("SELECT DISTINCT S.Nome From Salas S,Intervencao I \n" +
-                              "WHERE S.SalasID = I.SalasID \n" +
-                              "AND S.AreasClinicasID = 5 \n" +
-                              "AND NOT EXISTS(Select S2.SalasID From Salas S2, Intervencao I2 \n" +
-"									       WHERE I2.Data = "+ hojeL +"\n" +
-"									       AND I2.HoraI = "+ atual.getHours() +"\n" +
-"									       AND s2.SalasID = I2.SalasID\n" +
-"									       AND S.SalasID = S2.SalasID )");
+        rs = smt.executeQuery("SELECT DISTINCT S.Nome,S.SalasID From Salas S,Intervencao I,AreasClinicas A \n" +
+                                                "WHERE I.AreasClinicasID=A.AreasClinicasID\n" +
+                                                "and S.AreasClinicasID=A.AreasClinicasID\n" +
+                                                "AND S.AreasClinicasID ="+AreaClinicaID+" \n" +
+                                                "AND NOT EXISTS(Select S2.SalasID From Salas S2, Intervencao I2 \n" +
+                                                                               " WHERE I2.Data = "+hojeL+"\n" +
+                                                                               " AND I2.HoraI = "+atual.getHours()+"\n" +
+                                                                               " AND s2.SalasID = I2.SalasID\n" +
+                                                                              " AND S.SalasID = S2.SalasID ) ORDER BY S.SalasID");
         while(rs.next()){
             salaCB.addItem(rs.getString("Nome"));
         }
@@ -270,11 +271,15 @@ public class MeiosComplementaresRegisto extends javax.swing.JFrame {
                 rs.next();
             }
             PacientID=rs.getInt(1);
-            rs = smt.executeQuery("SELECT DISTINCT S.SalasID,S.Nome From Salas S,Intervencao I \n" +
-"					   WHERE S.SalasID = I.SalasID \n" +
-"					   AND S.AreasClinicasID = 5 \n" +
-"					   AND ( I.Data = " +hojeL + "\n" +
-"							OR HoraI <> " + atual.getHours()+")");
+            rs = smt.executeQuery("SELECT DISTINCT S.SalasID,S.Nome From Salas S,Intervencao I,AreasClinicas A \n" +
+                                                "WHERE I.AreasClinicasID=A.AreasClinicasID\n" +
+                                                "and S.AreasClinicasID=A.AreasClinicasID\n" +
+                                                "AND S.AreasClinicasID ="+AreaClinicaID+" \n" +
+                                                "AND NOT EXISTS(Select S2.SalasID From Salas S2, Intervencao I2 \n" +
+"                                                                              WHERE I2.Data = "+hojeL+"\n" +
+"									       AND I2.HoraI = "+atual.getHours()+"\n" +
+"									       AND s2.SalasID = I2.SalasID\n" +
+"									       AND S.SalasID = S2.SalasID ) ORDER BY S.SalasID");
             for (i=0;i<=salaCB.getSelectedIndex();i++){
                 rs.next();
             }
@@ -300,7 +305,6 @@ public class MeiosComplementaresRegisto extends javax.swing.JFrame {
             for(i=0;i<jTable1.getRowCount();i++){
                 rs = smt2.executeQuery("SELECT * FROM Equipa");            
                 if (jTable1.getValueAt(i,2).equals(true)){
-                    System.out.println(i);
                     rs.moveToInsertRow();
                     rs.updateInt("ColaboradoresID",Integer.valueOf(jTable1.getValueAt(i, 3).toString()));
                     rs.updateInt("IntervencaoID", IntervencaoID);
