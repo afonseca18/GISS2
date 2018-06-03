@@ -23,6 +23,7 @@ public class Consulta extends javax.swing.JFrame {
     ResultSet rs=null;
     Statement smt=null;
     int PacienteID;
+    int efetuada;
     int i;
 
  
@@ -74,7 +75,12 @@ public class Consulta extends javax.swing.JFrame {
                         model.setValueAt(rs.getInt("IntervencaoID"),i, 0);
                         model.setValueAt(rs.getString(1),i,1);
                         model.setValueAt(rs.getString(3),i,2);
-                        model.setValueAt(rs.getInt("Estado"), i, 3);
+                        if(rs.getInt("Estado")==1){
+                            model.setValueAt("Efectuada", i, 3);
+                        }
+                        else{
+                            model.setValueAt("Não Efectuada", i, 3);
+                        }
                        date.setTime(rs.getLong("Data")*1000);
                        model.setValueAt(sourceFormat.format(date) + " Horário:" + rs.getString("HoraI")+ "->" + rs.getString("HoraF"),i,4);
                        i++;
@@ -213,11 +219,17 @@ public class Consulta extends javax.swing.JFrame {
         }
         else{
             int linha= jTable2.getSelectedRow();
+            if (jTable2.getValueAt(linha,3).toString().matches("Efectuada")){
+                efetuada=1;
+            }
+            else{
+                efetuada=0;
+            }
            
          
             ConsultaVer consultaVer;
             try {
-                consultaVer = new ConsultaVer(Integer.valueOf(jTable2.getValueAt(linha,3).toString()),AreaClinicaID,con,pacienteCB.getSelectedItem().toString(),
+                consultaVer = new ConsultaVer(efetuada,AreaClinicaID,con,pacienteCB.getSelectedItem().toString(),
                         jTable2.getValueAt(linha,1).toString(),jTable2.getValueAt(linha,2).toString(),
                         Integer.valueOf(jTable2.getValueAt(linha,0).toString()));
                 consultaVer.setVisible(true);
